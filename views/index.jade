@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  form(action="/login", method="POST")
+    div.form-group
+      label(for="userId") UserId:&nbsp;
+      input(type="text" id="userId", name="userId")
+    div.form-group
+      label(for="passwd") Password:&nbsp;
+      input(type="password", id="passwd", name="passwd")
+    button.btn.btn-primary(type="submit") LogIn
