@@ -1,50 +1,80 @@
-let express = require('express');
-let router = express.Router();
-let client = require('../mattermost-client');
-let result = {};
+const express = require('express');
+const router = express.Router();
+const client = require('../mattermost-client');
+const result = {};
 
-let thisRes;
-router.post('/', function(req, res, next) {
-  thisRes = res;
-  client.login('eichisanden', 'redking', '', successLogin, error);
+router.post('/', (req, res, next) => {
+  login().then(getMe).then(getAllTeams).then(() => {console.log("end all"); console.log(result);res.render('top', result);});  
 });
 
-let successLogin = (resbody, res) => {
-  client.getMe(successGetMe, error);
-};
+function login() {
+  const p = new Promise((resolve, reject) => {
+    console.log("start login");
+    client.login('eichisanden', 'redking', '', () => {console.log("end login"); resolve();}, error);
+  });
+  return p;
+}
 
-let successGetMe = (resbody, res) => {
-  result.id = resbody.id;
-  result.username = resbody.username;
-  result.email = resbody.email;
-  result.nickname = resbody.nickname;
-  client.getAllTeams(successGetAllTeams, error);
-};
+function getMe() {
+  const p = new Promise((resolve, reject) => {
+    console.log("start getMe");
+    client.getMe((resbody, res) => {
+        result.id = resbody.id;
+        result.username = resbody.username;
+        result.email = resbody.email;
+        result.nickname = resbody.nickname;    
+        console.log("end getMe");
+        resolve();
+      },
+      error);
+  });
+  return p;
+}
 
-let successGetAllTeams = (resbody, res) => {
-  console.log(resbody);
+function getAllTeams() {
+  const promises = [];
   result.channels = [];
-  for (let teamId in resbody) {
-    console.log(teamId);
-    client.setTeamId(teamId);
-    client.getChannels(successGetChannels, error);
-  }
-  console.log(result);
-  thisRes.render('top', result);
-};
+  const p = new Promise((resolve, reject) => {
+    console.log("start getAllTeams");
+    client.getAllTeams((resbody, res) => {
+        for (const teamId in resbody) {
+          client.setTeamId(teamId);
+          promises.push(getChannels());
+        }
+        Promise.all(promises).then(() => {resolve();});
+        console.log("end getAllTeams");
+      },
+      error);
+  });
+  return p;
+}
 
-let successGetChannels = (resbody, res) => {
-  console.log(resbody);
-  let obj = {};
-  obj.id = resbody.id;
-  obj.name = resbody.display_name;
-  result.channels.push(obj);
-};
+function getChannels() {
+  const p = new Promise((resolve, reject) => {
+    client.getChannels((resbody, res) => {
+      console.log("start getChannels");
+      console.log(resbody);
+      for (const channel of resbody) {
+        console.log(channel);
+        const obj = {};
+        obj.id = channel.id;
+        obj.name = channel.display_name;
+        result.channels.push(obj);  
+      }
+      console.log("end getChannels");
+      resolve();
+    }, error);
+  });
+  return p;
+}
 
 let error = (e, err, res) => {
-  console.log("error")
-  console.log(e);
-  console.log(err);
+  console.log("===============================")
+  console.log("Error")
+  console.log("===============================")
+  console.log(`status_code:${e.status_code}`);
+  console.log(`detailed_error:${e.detailed_error}`);
+  console.log(`message:${e.message}`);
 };
 
 module.exports = router;
