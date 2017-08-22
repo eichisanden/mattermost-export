@@ -28,7 +28,7 @@ function getPosts(teamId, channelId) {
 
 function dateToString(milisec) {
   let d = new Date(milisec);
-  return [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('/') + " " + d.toLocaleTimeString();
+  return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${d.toLocaleTimeString()}`
 }
 
 let error = (e, err, res) => {
