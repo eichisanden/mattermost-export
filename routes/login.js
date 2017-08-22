@@ -4,7 +4,7 @@ const client = require('../mattermost-client');
 const result = {};
 
 router.post('/', (req, res, next) => {
-  login().then(getMe).then(getAllTeams).then(() => {console.log("end all"); console.log(result);res.render('top', result);});  
+  login().then(getMe).then(getAllTeams).then(getChannels).then(() => {console.log("end all"); console.log(result);res.render('top', result);});  
 });
 
 function login() {
@@ -32,34 +32,35 @@ function getMe() {
 }
 
 function getAllTeams() {
-  const promises = [];
-  result.channels = [];
+  result.teams = [];
   const p = new Promise((resolve, reject) => {
     console.log("start getAllTeams");
     client.getAllTeams((resbody, res) => {
         for (const teamId in resbody) {
-          client.setTeamId(teamId);
-          promises.push(getChannels());
+          const obj = {};
+          obj.id = resbody[teamId].id;
+          obj.name = resbody[teamId].display_name;
+          result.teams.push(obj);
         }
-        Promise.all(promises).then(() => {resolve();});
         console.log("end getAllTeams");
+        resolve(result.teams[0].id);
       },
       error);
   });
   return p;
 }
 
-function getChannels() {
+function getChannels(teamId) {
+  result.channels = [];  
+  client.setTeamId(teamId);  
   const p = new Promise((resolve, reject) => {
     client.getChannels((resbody, res) => {
       console.log("start getChannels");
-      console.log(resbody);
       for (const channel of resbody) {
-        console.log(channel);
         const obj = {};
         obj.id = channel.id;
         obj.name = channel.display_name;
-        result.channels.push(obj);  
+        result.channels.push(obj);
       }
       console.log("end getChannels");
       resolve();

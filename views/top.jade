@@ -15,7 +15,15 @@ block content
     tr
       td email
       td= email
-
-  select
-    each channel in channels
-      option(value=channel.id) #{channel.name}
+    tr
+      td チーム
+      td
+        select
+          each team in teams
+            option(value=team.id) #{team.name}
+    tr
+      td チャンネル
+      td
+        select
+          each channel in channels
+            option(value=channel.id) #{channel.name}
