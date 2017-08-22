@@ -5,27 +5,32 @@ block content
   form(action="/logout", method="POST")
     button.btn.btn-primary(type="submit") LogOut
 
-  table.table
-    tr
-      td id
-      td= id
-    tr
-      td username
-      td= username
-    tr
-      td email
-      td= email
-    tr
-      td チーム
-      td
-        select#teamId(name="teamId")
-          each team in teams
-            option(value=team.id) #{team.name}
-    tr
-      td チャンネル
-      td
-        select#channelId(name="channelId")
-          each channel in channels
-            option(value=channel.id) #{channel.name}
+  form(action="/export", method="POST")
+    table.table
+      tr
+        th id
+        td= id
+      tr
+        th username
+        td= username
+      tr
+        th email
+        td= email
+      tr
+        th Team
+        td
+          select#teamId(name="teamId")
+            each team in teams
+              option(value=team.id) #{team.name}
+      tr
+        th Channel
+        td
+          select#channelId(name="channelId")
+            each channel in channels
+              option(value=channel.id) #{channel.name}
+      tr
+        th
+        td
+          button.btn.btn-primary(type="submit") Export
 
   script(src="/javascripts/top.js")
