@@ -13,9 +13,12 @@ let success = (resbody, res) => {
 };
 
 let error = (e, err, res) => {
-  console.log("error")
-  console.log(e);
-  console.log(err);
+  console.log("===============================")
+  console.log("Error")
+  console.log("===============================")
+  console.log(`status_code:${e.status_code}`);
+  console.log(`detailed_error:${e.detailed_error}`);
+  console.log(`message:${e.message}`);
 };
 
 module.exports = router;

@@ -18,12 +18,14 @@ block content
     tr
       td チーム
       td
-        select
+        select#teamId(name="teamId")
           each team in teams
             option(value=team.id) #{team.name}
     tr
       td チャンネル
       td
-        select
+        select#channelId(name="channelId")
           each channel in channels
             option(value=channel.id) #{channel.name}
+
+  script(src="/javascripts/top.js")
