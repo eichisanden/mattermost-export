@@ -13,6 +13,9 @@ var changeTeam = require('./routes/changeTeam');
 var exp = require('./routes/export');
 var app = express();
 
+// enable self-certified
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
